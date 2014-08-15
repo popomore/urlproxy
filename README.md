@@ -24,6 +24,20 @@ proxy('a.js').pipe(res);
 
 It will find the file in local directory. if not found, it will find from the proxy server, and cache to local if cache option is true.
 
+custom `ready` event, when stream can be ready to pipe, when you use express or koa.
+
+```
+proxy('a.js')
+.on('ready', function() {
+  res.statusCode = 200;
+})
+.on('error', function() {
+  res.statusCode = 404
+  res.end('Not Found');
+})
+.pipe(res);
+```
+
 ## Option
 
 - directory: local directory, default `process.cwd()`,

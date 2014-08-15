@@ -17,7 +17,8 @@
     "mocha": "1",
     "rimraf": "~2.2.8",
     "should": "4",
-    "st": "~0.5.1"
+    "st": "~0.5.1",
+    "spy": "~0.1.0"
   },
   "repository": {
     "type": "git",

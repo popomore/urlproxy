@@ -34,6 +34,9 @@ module.exports = function(urlPath, opt) {
   if (fs.existsSync(localPath) && fs.statSync(localPath).isFile()) {
     debug('create local stream %s', localPath);
     srcStream = fs.createReadStream(localPath);
+    setImmediate(function() {
+      srcStream.emit('ready');
+    });
   } else if (opt.proxy) {
     var ropt = {
       gzip: true,
@@ -49,21 +52,24 @@ module.exports = function(urlPath, opt) {
   }
 
   return srcStream;
+
+  function wrapRequest(url, opt) {
+    return request(url, opt)
+    .on('response', function(res) {
+      var err;
+      if (res.statusCode >= 500) {
+        err = new Error('server error');
+        err.statusCode = res.statusCode;
+        return this.emit('error', err);
+      }
+      if (res.statusCode >= 300) {
+        err = new Error('not found ' + url);
+        err.statusCode = res.statusCode;
+        return this.emit('error', err);
+      }
+      srcStream.emit('ready');
+    });
+  }
 };
 
-function wrapRequest(url, opt) {
-  return request(url, opt)
-  .on('response', function(res) {
-    var err;
-    if (res.statusCode >= 500) {
-      err = new Error('server error');
-      err.statusCode = res.statusCode;
-      return this.emit('error', err);
-    }
-    if (res.statusCode >= 300) {
-      err = new Error('not found ' + url);
-      err.statusCode = res.statusCode;
-      return this.emit('error', err);
-    }
-  });
-}
+
