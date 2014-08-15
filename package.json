@@ -1,6 +1,6 @@
 {
   "name": "urlproxy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "set a proxy for url using stream",
   "main": "index",
   "dependencies": {
