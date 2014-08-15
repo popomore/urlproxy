@@ -11,7 +11,22 @@ describe('urlproxy', function() {
   var proxy = require('..');
   var fixtures = join(__dirname, 'fixtures');
 
-  var server = http.createServer(st(fixtures)).listen(12345);
+  var mount = st({ path: fixtures });
+  var server = http.createServer(function(req, res) {
+    if (req.url === '/500.js') {
+      res.statusCode = 500;
+      return res.end();
+    }
+    if (req.url === '/302.js') {
+      res.statusCode = 302;
+      res.writeHead(302, {
+        'Location': '/a.js'
+      });
+      return res.end();
+    }
+    mount(req, res);
+  }).listen(12345);
+
   after(function() {
     server.close();
   });
@@ -46,7 +61,7 @@ describe('urlproxy', function() {
     });
   });
 
-  it('should error from remote', function(done) {
+  it('should get 404 from remote', function(done) {
     proxy('noexist.js', {proxy: 'http://localhost:12345'})
     .on('error', function(err) {
       should.exist(err);
@@ -55,6 +70,35 @@ describe('urlproxy', function() {
     });
   });
 
+  it('should get 500 from remote', function(done) {
+    proxy('500.js', {proxy: 'http://localhost:12345'})
+    .on('error', function(err) {
+      should.exist(err);
+      err.message.should.eql('server error');
+      done();
+    });
+  });
+
+  it('should get 302 from remote', function(done) {
+    proxy('302.js', {proxy: 'http://localhost:12345'})
+    .on('error', function(err) {
+      should.exist(err);
+      err.message.should.eql('not found http://localhost:12345/302.js');
+      done();
+    });
+  });
+
+  it('should response when followRedirect 302 from remote', function(done) {
+    var ret = '';
+    proxy('302.js', {proxy: 'http://localhost:12345', followRedirect: true})
+    .on('data', function(data) {
+      ret += data;
+    })
+    .on('end', function() {
+      ret.should.eql('console.log(\'a\');\n');
+      done();
+    });
+  });
 
   it('should response from remote and cache', function(done) {
     var cache = join(fixtures, 'cache');

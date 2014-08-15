@@ -20,6 +20,7 @@ var defaults = {
   // cache remote file
   cache: false,
 
+  // follow redirect when 302
   followRedirect: false
 };
 

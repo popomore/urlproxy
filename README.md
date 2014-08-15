@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/coveralls/popomore/urlproxy?style=flat)](https://coveralls.io/r/popomore/urlproxy)
 [![NPM downloads](http://img.shields.io/npm/dm/urlproxy.svg?style=flat)](https://npmjs.org/package/urlproxy)
 
-The best module ever.
+set a proxy for url using stream
 
 ---
 
@@ -18,8 +18,18 @@ $ npm install urlproxy -g
 ## Usage
 
 ```
-var urlproxy = require('urlproxy');
+var proxy = require('urlproxy');
+proxy('a.js').pipe(res);
 ```
+
+It will find the file in local directory. if not found, it will find from the proxy server, and cache to local if cache option is true.
+
+## Option
+
+- directory: local directory, default `process.cwd()`,
+- proxy: set remote server
+- cache: cache remote file
+- followRedirect: follow redirect when 302
 
 ## LISENCE
 

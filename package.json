@@ -1,7 +1,7 @@
 {
   "name": "urlproxy",
   "version": "0.1.0",
-  "description": "The best module ever.",
+  "description": "set a proxy for url using stream",
   "main": "index",
   "dependencies": {
     "debug": "~1.0.4",
@@ -16,8 +16,7 @@
     "istanbul": "0",
     "mocha": "1",
     "rimraf": "~2.2.8",
-    "should": "~4.0.4",
-    "spy": "~0.1.1",
+    "should": "4",
     "st": "~0.5.1"
   },
   "repository": {
